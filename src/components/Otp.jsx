@@ -1,61 +1,93 @@
-import React, { useRef, useState } from "react";
+import React, { useContext, useRef, useState } from "react";
+// import { Context } from "../../main/context/Context";
 
-export default function Otp() {
-  const [otpValues, setOtpValues] = useState(["", "", "", ""]);
+export default function Login() {
+  // const { loginTogle, setLoginTogle } = useContext(Context);
+  const [timeLeft, setTimeLeft] = useState(0);
   const inputRefs = useRef([]);
+  const [otpValues, setOTPValues] = useState(["", "", "", ""]);
+
+  const handleOtpReq = () => {
+    setTimeLeft(60);
+    setviewotp(true);
+  };
 
   const handleChange = (index, value) => {
-    // Update the OTP value
-    const newOtpValues = [...otpValues];
-    newOtpValues[index] = value;
-    setOtpValues(newOtpValues);
+    const newOTPValues = [...otpValues];
+    newOTPValues[index] = value;
+    setOTPValues(newOTPValues);
 
-    // Move to the next input field or rewind to the previous one
+    // Move focus to the next input field
     if (value && index < inputRefs.current.length - 1) {
       inputRefs.current[index + 1].focus();
-    } else if (!value && index > 0) {
-      inputRefs.current[index - 1].focus();
     }
   };
 
+  const handleBackspace = (index, e) => {
+    if (e.keyCode === 8 && index > 0 && !otpValues[index]) {
+      inputRefs.current[index - 1].focus();
+    }
+  };
   return (
-    <div className=" w-[50vw] h-[50vh] ">
-      <div className="w-full h-full mt-[-20px] mb-[-20px]">
-        {/* OTP */}
-        <div className="flex flex-col gap-2 mt-12">
-          <p id="f500" className="text-[14px] text-[#344054] mb-2">
-            Enter Verification Code
-          </p>
-          <div className="flex gap-2">
+    <div className="flex items-center justify-center h-screen">
+      <div className="w-[30vw]">
+        <h1 className="md:text-[20px] text-[16px] font-[600]">
+          Login with you Phone Number{" "}
+        </h1>
+
+        <div className="mt-4">
+          <h1 className="text-[14px] font-[500] text-[#344054]">
+            Phone Number
+          </h1>
+          <input
+            type="text"
+            placeholder="Enter Your Phone Number"
+            className="mt-1 w-full  rounded-[8px] border-[1px] border-[rgba(30,31,62,0.30)] px-3 md:py-4 py-3 outline-none"
+          />
+        </div>
+
+        <div className="mt-4">
+          <h1 className="text-[14px] font-[500] text-[#344054]">
+            Enter 4 Digit OTP
+          </h1>
+
+          <div className="mt-1 flex gap-2">
             {[...Array(4)].map((_, index) => (
-              <div key={index} className="w-[60px] h-[60px]" id="f400">
+              <div key={index} className="h-[50px] w-full">
                 <input
                   maxLength={1}
                   value={otpValues[index]}
                   onChange={(e) => handleChange(index, e.target.value)}
-                  className="w-full h-full flex flex-col items-center justify-center text-center outline-none rounded-xl border border-[#D0D5DD] text-lg bg-white focus:bg-gray-50 focus:ring-1 ring-[#B51F4E]"
+                  onKeyDown={(e) => handleBackspace(index, e)}
+                  onKeyPress={(e) => {
+                    // Prevent non-numeric characters
+                    if (e.charCode < 48 || e.charCode > 57) {
+                      e.preventDefault();
+                    }
+                  }}
+                  className="flex h-full w-full flex-col items-center justify-center rounded-[8px] border border-[#D0D5DD] bg-white text-center text-[14px] font-[400] outline-none ring-secondary focus:bg-white focus:ring-1"
                   type="text"
+                  inputMode="numeric"
+                  placeholder="-"
                   ref={(inputRef) => (inputRefs.current[index] = inputRef)}
                 />
               </div>
             ))}
           </div>
+
+          <h1 className="mt-3 text-[14px] font-[500] text-secondary">
+            Resent OTP in 45 Sec...
+          </h1>
         </div>
 
         <button
-          id="f400"
-          className="bg-[#B51F4E] text-[20px] text-white w-full p-5 rounded-[8px] mt-12"
-          onClick={() => {}}
+          onClick={() => {
+            // setLoginTogle(1);
+          }}
+          className="mt-[100px] w-full rounded-[8px] bg-primary md:py-5 py-3 text-[16px] font-[600] text-[#fff]"
         >
-          Verify
+          Confirm
         </button>
-
-        <p id="f400" className="w-full mt-8 flex items-center gap-2">
-          Didn't Receive{" "}
-          <span className="text-[#B51F4E] underline" id="f500">
-            Resent OTP
-          </span>{" "}
-        </p>
       </div>
     </div>
   );
